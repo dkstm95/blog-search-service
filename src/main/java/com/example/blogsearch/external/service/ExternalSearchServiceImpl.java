@@ -11,6 +11,7 @@ import com.example.blogsearch.external.feign.response.KakaoSearchResponse;
 import com.example.blogsearch.external.feign.response.NaverBlogResult;
 import com.example.blogsearch.external.feign.response.NaverSearchResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExternalSearchServiceImpl implements ExternalSearchService {
 
     private static final DateTimeFormatter KAKAO_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -38,20 +40,23 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
         try {
             KakaoSearchResponse<KakaoBlogResult> kakaoBlogPostResponse = kakaoFeignClient.getBlogPosts(query, page, size,
                     sortType.getKakao());
-            return convertKakaoBlogPostsToDto(kakaoBlogPostResponse);
+            log.info("[External][Feign] Kakao API call success. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
+            return convertKakaoBlogPostsToDto(kakaoBlogPostResponse, page);
         } catch (ExternalClientCanNotProceedException e) {
+            log.error("[External][Feign] Kakao API call failed. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
             try {
                 NaverSearchResponse<NaverBlogResult> naverBlogPostList = naverFeignClient.getBlogPosts(query, size, page,
                         sortType.getFallback());
+                log.info("[External][Feign] Naver API call success. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
                 return convertNaverBlogPostsToDto(naverBlogPostList);
             } catch (ExternalClientCanNotProceedException ex) {
-                throw new RuntimeException("[Search] External API call failed. (Kakao, Naver)");
+                throw new RuntimeException("External API call failed. (query: " + query + ", page: " + page + ", size: " + size + ", sort: " + sort + ")", ex);
             }
         }
 
     }
 
-    private BlogPostsDto convertKakaoBlogPostsToDto(KakaoSearchResponse<KakaoBlogResult> kakaoBlogPostList) {
+    private BlogPostsDto convertKakaoBlogPostsToDto(KakaoSearchResponse<KakaoBlogResult> kakaoBlogPostList, int page) {
 
         List<BlogPostDto> blogPostDtoList = kakaoBlogPostList.getDocuments().stream()
                 .map(it -> BlogPostDto.builder()
@@ -64,11 +69,13 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
                         .build())
                 .collect(Collectors.toList());
 
-        Integer nextPage = kakaoBlogPostList.getMeta().isEnd() ? null : kakaoBlogPostList.getMeta().getPageableCount() + 1;
+        Integer nextPage = kakaoBlogPostList.getMeta().isEnd() ? null : page + 1;
+        int totalElements = kakaoBlogPostList.getMeta().getPageableCount();
 
         return BlogPostsDto.builder()
                 .blogPostDtoList(blogPostDtoList)
                 .nextPage(nextPage)
+                .totalElements(totalElements)
                 .build();
 
     }
@@ -90,10 +97,10 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
                 })
                 .collect(Collectors.toList());
 
-        Integer nextPage = null;
         int currentPageNumber = naverBlogPostList.getStart();
         int size = naverBlogPostList.getDisplay();
         int total = naverBlogPostList.getTotal();
+        Integer nextPage = null;
         if (currentPageNumber * size + size < total) {
             nextPage = currentPageNumber + 1;
         }
@@ -101,6 +108,7 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
         return BlogPostsDto.builder()
                 .blogPostDtoList(blogPostDtoList)
                 .nextPage(nextPage)
+                .totalElements(total)
                 .build();
 
     }

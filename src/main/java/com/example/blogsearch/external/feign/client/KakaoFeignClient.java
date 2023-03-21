@@ -18,4 +18,5 @@ public interface KakaoFeignClient {
                                                      @RequestParam(value = "page") int page,
                                                      @RequestParam(value = "size") int size,
                                                       @RequestParam(value = "sort") String sort);
+
 }

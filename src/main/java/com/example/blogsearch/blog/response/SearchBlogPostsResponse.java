@@ -11,20 +11,22 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
-public class BlogSearchResponse {
+public class SearchBlogPostsResponse {
 
     private final List<BlogPostData> list;
-    private final int nextPage;
+    private final Integer nextPage;
+    private final int totalElements;
 
-    public static BlogSearchResponse of(BlogPostsDto dto) {
+    public static SearchBlogPostsResponse from(BlogPostsDto dto) {
 
         List<BlogPostData> list = dto.getBlogPostDtoList().stream()
                 .map(BlogPostData::of)
                 .collect(Collectors.toList());
 
-        return BlogSearchResponse.builder()
+        return SearchBlogPostsResponse.builder()
                 .list(list)
                 .nextPage(dto.getNextPage())
+                .totalElements(dto.getTotalElements())
                 .build();
 
     }

@@ -13,4 +13,6 @@ public class BlogPostsDto {
 
     private Integer nextPage;
 
+    private int totalElements;
+
 }

@@ -18,4 +18,5 @@ public interface NaverFeignClient {
                                                       @RequestParam(value = "display") int page,
                                                       @RequestParam(value = "start") int size,
                                                       @RequestParam(value = "sort") String sort);
+
 }
