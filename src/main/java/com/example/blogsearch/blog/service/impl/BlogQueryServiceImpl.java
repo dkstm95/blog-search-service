@@ -1,9 +1,7 @@
 package com.example.blogsearch.blog.service.impl;
 
-import com.example.blogsearch.blog.dto.BlogPostsDto;
 import com.example.blogsearch.blog.dto.PopularQueryDto;
-import com.example.blogsearch.blog.service.BlogService;
-import com.example.blogsearch.external.service.ExternalSearchService;
+import com.example.blogsearch.blog.service.BlogQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RScoredSortedSet;
@@ -17,21 +15,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BlogServiceImpl implements BlogService {
+public class BlogQueryServiceImpl implements BlogQueryService {
 
     private static final String POPULAR_QUERIES_KEY = "popular_queries";
 
-    final ExternalSearchService externalSearchService;
-
     final RedissonClient redissonClient;
-
-    @Override
-    public BlogPostsDto searchBlogPosts(String query, int page, int size, String sort) {
-
-        incrementQueryCount(query);
-        return externalSearchService.searchBlogPosts(query, page, size, sort);
-
-    }
 
     @Override
     public List<PopularQueryDto> getPopularQueries() {
@@ -44,7 +32,8 @@ public class BlogServiceImpl implements BlogService {
 
     }
 
-    private void incrementQueryCount(String query) {
+    @Override
+    public void incrementQueryCount(String query) {
 
         RScoredSortedSet<String> popularQueries = redissonClient.getScoredSortedSet(POPULAR_QUERIES_KEY);
         popularQueries.addScore(query, 1);

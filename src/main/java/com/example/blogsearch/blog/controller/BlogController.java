@@ -4,7 +4,8 @@ import com.example.blogsearch.blog.dto.BlogPostsDto;
 import com.example.blogsearch.blog.dto.PopularQueryDto;
 import com.example.blogsearch.blog.response.PopularQueriesResponse;
 import com.example.blogsearch.blog.response.SearchBlogPostsResponse;
-import com.example.blogsearch.blog.service.BlogService;
+import com.example.blogsearch.blog.service.BlogQueryService;
+import com.example.blogsearch.blog.service.BlogSearchService;
 import com.example.blogsearch.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogController {
 
-    final BlogService blogService;
+    final BlogSearchService blogSearchService;
+    final BlogQueryService blogQueryService;
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> searchBlogPosts(
@@ -29,7 +31,7 @@ public class BlogController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "accuracy") String sort) {
 
-        BlogPostsDto dto = blogService.searchBlogPosts(query, page, size, sort);
+        BlogPostsDto dto = blogSearchService.searchBlogPosts(query, page, size, sort);
         return ResponseEntity.ok(ApiResponse.success(SearchBlogPostsResponse.from(dto)));
 
     }
@@ -37,7 +39,7 @@ public class BlogController {
     @GetMapping("/popular-queries")
     public ResponseEntity<ApiResponse> getPopularQueries() {
 
-        List<PopularQueryDto> dto = blogService.getPopularQueries();
+        List<PopularQueryDto> dto = blogQueryService.getPopularQueries();
         return ResponseEntity.ok(ApiResponse.success(PopularQueriesResponse.from(dto)));
 
     }
