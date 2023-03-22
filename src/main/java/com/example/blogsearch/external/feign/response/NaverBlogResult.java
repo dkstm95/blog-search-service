@@ -30,6 +30,6 @@ public class NaverBlogResult {
 
     // 블로그 글 작성일시, YYYYMMDD
     @JsonProperty("postdate")
-    private String datetime;
+    private String postdate;
 
 }

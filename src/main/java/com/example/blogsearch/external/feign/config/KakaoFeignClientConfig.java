@@ -11,11 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 public class KakaoFeignClientConfig {
 
@@ -47,14 +43,14 @@ public class KakaoFeignClientConfig {
             try {
                 responseBody = getBodyString(response);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to get response body of IAM Feign client");
+                throw new RuntimeException("Failed to get response body of Kakao Feign client");
             }
 
             return new ExternalClientCanNotProceedException(
                     String.format(EXCEPTION_MESSAGE_FORMAT,
                             responseStatus,
                             methodKey,
-                            responseBody), 9999);
+                            responseBody));
         };
 
     }

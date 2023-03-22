@@ -37,21 +37,37 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
 
         SearchSortType sortType = SearchSortType.getKakaoType(sort);
 
+        BlogPostsDto kakaoBlogPosts = searchKakaoBlogPosts(query, page, size, sortType.getKakao());
+        if(kakaoBlogPosts != null) {
+            return kakaoBlogPosts;
+        }
+
+        return searchNaverBlogPosts(query, page, size, sortType.getFallback());
+
+    }
+
+    private BlogPostsDto searchKakaoBlogPosts(String query, int page, int size, String sort) {
+
         try {
-            KakaoSearchResponse<KakaoBlogResult> kakaoBlogPostResponse = kakaoFeignClient.getBlogPosts(query, page, size,
-                    sortType.getKakao());
+            KakaoSearchResponse<KakaoBlogResult> kakaoBlogPostResponse = kakaoFeignClient.getBlogPosts(query, page, size, sort);
             log.info("[External][Feign] Kakao API call success. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
             return convertKakaoBlogPostsToDto(kakaoBlogPostResponse, page);
         } catch (ExternalClientCanNotProceedException e) {
             log.error("[External][Feign] Kakao API call failed. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
-            try {
-                NaverSearchResponse<NaverBlogResult> naverBlogPostList = naverFeignClient.getBlogPosts(query, size, page,
-                        sortType.getFallback());
-                log.info("[External][Feign] Naver API call success. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
-                return convertNaverBlogPostsToDto(naverBlogPostList);
-            } catch (ExternalClientCanNotProceedException ex) {
-                throw new RuntimeException("External API call failed. (query: " + query + ", page: " + page + ", size: " + size + ", sort: " + sort + ")", ex);
-            }
+            return null;
+        }
+
+    }
+
+    private BlogPostsDto searchNaverBlogPosts(String query, int page, int size, String sort) {
+
+        try {
+            NaverSearchResponse<NaverBlogResult> naverBlogPostList = naverFeignClient.getBlogPosts(query, size, page, sort);
+            log.info("[External][Feign] Naver API call success. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
+            return convertNaverBlogPostsToDto(naverBlogPostList);
+        } catch (ExternalClientCanNotProceedException e) {
+            log.error("[External][Feign] Naver API call failed. (query: {}, page: {}, size: {}, sort: {})", query, page, size, sort);
+            return null;
         }
 
     }
@@ -84,7 +100,7 @@ public class ExternalSearchServiceImpl implements ExternalSearchService {
 
         List<BlogPostDto> blogPostDtoList = naverBlogPostList.getItems().stream()
                 .map(it -> {
-                    LocalDate date = LocalDate.parse(it.getDatetime(), NAVER_DATETIME_FORMATTER);
+                    LocalDate date = LocalDate.parse(it.getPostdate(), NAVER_DATETIME_FORMATTER);
                     Instant instant = date.atStartOfDay().toInstant(ZoneOffset.UTC);
                     return BlogPostDto.builder()
                         .title(it.getTitle())

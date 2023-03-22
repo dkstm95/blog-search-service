@@ -7,7 +7,6 @@ import feign.codec.ErrorDecoder;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -46,14 +45,14 @@ public class NaverFeignClientConfig {
             try {
                 responseBody = getBodyString(response);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to get response body of IAM Feign client");
+                throw new RuntimeException("Failed to get response body of Naver Feign client");
             }
 
             return new ExternalClientCanNotProceedException(
                     String.format(EXCEPTION_MESSAGE_FORMAT,
                             responseStatus,
                             methodKey,
-                            responseBody), 9999);
+                            responseBody));
         };
 
     }

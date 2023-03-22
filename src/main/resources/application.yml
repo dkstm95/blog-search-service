@@ -5,11 +5,6 @@ spring:
     url: jdbc:h2:tcp://localhost/~/test
     driver-class-name: org.h2.Driver
     username: sa
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/schema.sql
-      data-locations: classpath:db/data.sql
   jackson:
     serialization:
       write-dates-as-timestamps: true
@@ -29,7 +24,6 @@ spring:
     host: localhost
     port: 6379
 
-
 logging:
   level:
     com:
@@ -46,4 +40,3 @@ external:
     url:
       kakao: https://dapi.kakao.com
       naver: https://openapi.naver.com
-

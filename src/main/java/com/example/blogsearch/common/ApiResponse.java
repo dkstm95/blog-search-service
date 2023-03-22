@@ -2,7 +2,6 @@ package com.example.blogsearch.common;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -34,6 +33,14 @@ public class ApiResponse {
         return ApiResponse.builder()
                 .code(ApiStatus.BAD_REQUEST.getCode())
                 .message(ApiStatus.BAD_REQUEST.getMessage())
+                .data(errorMessage)
+                .build();
+    }
+
+    public static ApiResponse internalServerError(String errorMessage) {
+        return ApiResponse.builder()
+                .code(ApiStatus.INTERNAL_SERVER_ERROR.getCode())
+                .message(ApiStatus.INTERNAL_SERVER_ERROR.getMessage())
                 .data(errorMessage)
                 .build();
     }
