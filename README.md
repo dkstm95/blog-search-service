@@ -17,12 +17,12 @@
 ## Prerequisite
 - `application-API-KEY.properties` 파일 생성 후 아래 설정 값을 입력합니다.
   - `kakao.auth.type = KakaoAK`
-    `kakao.auth.rest-api-key = {KAKAO-REST-API-KEY}`
-    `naver.auth.client-id = {NAVER-CLIENT-ID}`
-    `naver.auth.client-secret = {NAVER-CLIENT-SECRET}`
+  - `kakao.auth.rest-api-key = {KAKAO-REST-API-KEY}`
+  - `naver.auth.client-id = {NAVER-CLIENT-ID}`
+  - `naver.auth.client-secret = {NAVER-CLIENT-SECRET}`
 - H2 Database 설치 및 실행이 필요합니다.
   - `url`: `jdbc:h2:tcp://localhost/~/test`
-    `username`: `sa`
+  - `username`: `sa`
 - Redis 설치 및 실행이 필요합니다.
   - `port`: `6379`
 
