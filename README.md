@@ -2,10 +2,10 @@
 
 ## 블로그 검색
 - `GET /blogs/search?query=검색어&page=1&size=10&sort=accuracy`
-  - qurey -> required
-  - page -> not required, default 1
-  - size -> not required, default 10
-  - sort -> not required, default "accuracy"
+  - qurey -> required, String
+  - page -> not required, Number, default 1
+  - size -> not required, Number, default 10
+  - sort -> not required, String, default "accuracy"
 - 매 호출마다 검색어 카운트 1 증가
 - 다음(daum) 블로그 글을 default로 검색
 - 다음 서비스에 연결 불가 시, 네이버 블로그 글 검색
