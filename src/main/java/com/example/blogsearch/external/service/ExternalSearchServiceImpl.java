@@ -1,6 +1,6 @@
 package com.example.blogsearch.external.service;
 
-import com.example.blogsearch.blog.domain.SearchSortType;
+import com.example.blogsearch.external.domain.SearchSortType;
 import com.example.blogsearch.blog.dto.BlogPostDto;
 import com.example.blogsearch.blog.dto.BlogPostsDto;
 import com.example.blogsearch.external.exception.ExternalClientCanNotProceedException;

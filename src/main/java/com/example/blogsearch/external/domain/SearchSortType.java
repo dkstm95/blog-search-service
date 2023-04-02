@@ -1,4 +1,4 @@
-package com.example.blogsearch.blog.domain;
+package com.example.blogsearch.external.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
